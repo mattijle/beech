@@ -20,7 +20,6 @@ for (const file of commandFiles) {
 
 client.on('ready', async () => {
     console.log(`logged in as ${client.user.tag}`)
-    //await register();
     const guilds = await client.guilds.fetch()
     guilds.each(guild => register(guild.id))
 })
