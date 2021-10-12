@@ -1,6 +1,9 @@
-module.exports = {
+
+
+module.exports =  {
 	name: 'interactionCreate',
-	execute(interaction) {
+	execute(client, interaction) {
+		
 			if (!interaction.isCommand()) return;
 			const command = client.commands.get(interaction.commandName);
 			if (!command) return;
@@ -8,7 +11,7 @@ module.exports = {
 			try {
 				command.execute(interaction);
 			} catch (error) {
-				console.log(error);
+				console.error(error);
 				interaction.reply({ content: 'Jotain meni pieleen.', ephemeral: true })
 			}
 	},
