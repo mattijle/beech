@@ -12,7 +12,7 @@ module.exports = {
         const guildRoles = await guild.roles.fetch();
         let emojiRole = {};
         if (!roles) {
-            interaction.reply({ content: 'Ei rooleja tarjolla.', ephemeral: true });
+            interaction.reply({ content: 'Ei rooleja tarjolla. Lisää roolit "/set roolit" komennolla.', ephemeral: true });
             return;
         }
         await interaction.reply({ content: 'Luodaan roolitusviesti.', ephemeral: true });
