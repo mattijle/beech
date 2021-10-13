@@ -12,8 +12,8 @@ module.exports = {
             await interaction.reply({ content: 'Tarvitset admin oikeudet', ephemeral: true });
             return;
         }
-        const optsRoles = interaction.options.getString('roolit')
-
+        const optsRoles = interaction.options.getString('roolit');
+        console.log(optsRoles);
         const optsChannels = interaction.options.getString('kanava');
 
         if (!optsRoles && !optsChannels) {
@@ -23,17 +23,35 @@ module.exports = {
         const guild = interaction.guild;
         let reply = '';
         if (optsRoles) {
-            const roles = optsRoles.split(',').trim();
+            const channel = interaction.guild.channels.fetch(interaction.channelId);
+            const roles = optsRoles.split(',');
             const guildroles = await guild.roles.fetch();
             const addedRoles = roles.reduce((prev, role) => {
+                role = role.trim();
                 gRole = guildroles.find((r => r.name === role));
                 if (!gRole)
                     return prev;
-                prev.push(role);
+                prev[role] = '';
                 return prev;
-            }, []);
+            }, {});
+            const information = await interaction.channel.send('Reagoi seuraaviin viesteihin haluamallasi emojilla.')
+            setTimeout(() => {
+                information.delete();
+            }, 1000 * 60 * 3)
+            Object.keys(addedRoles).map(async (role) => {
+
+                const m = await interaction.channel.send(role);
+                let reaction = await m.awaitReactions({ max: 1 });
+                console.log(reaction.first()._emoji.name);
+                addedRoles[role] = reaction.first()._emoji.name;
+                updateGuildRoles(guild.name, addedRoles);
+                setTimeout(() => {
+                    m.delete();
+                }, 1000 * 60 * 3)
+            })
+
             updateGuildRoles(guild.name, addedRoles);
-            reply += `Pyydettävät roolit: ${addedRoles.toString()}`
+            reply += `Pyydettävät roolit: ${Object.keys(addedRoles).toString()}`
         }
         if (optsChannels) {
             const channelId = optsChannels.replace(/<|#|>/g, '')

@@ -8,7 +8,6 @@ const addRoles = async (interaction) => {
     const guild = interaction.guild;
     const guildRoles = await guild.roles.fetch();
     const availableRoles = getGuildRoles(guild.name);
-    console.log(interaction.commandName);
     if (!guildRoles || !availableRoles) {
         await interaction.reply({ content: 'Rooleja ei ole tarjolla.', ephemeral: true });
         return;
@@ -17,8 +16,7 @@ const addRoles = async (interaction) => {
         add = add.split(',');
         add.map(role => {
             role = role.trim();
-            const idx = availableRoles.findIndex(r => r === role)
-
+            const idx = Object.keys(availableRoles).findIndex(r => r === role)
             if (idx < 0)
                 return;
             const gRole = guildRoles.find((r => r.name === role));
@@ -43,7 +41,7 @@ const removeRoles = async (interaction) => {
         remove = remove.split(',');
         remove.map(role => {
             role = role.trim();
-            const idx = availableRoles.findIndex(r => r === role)
+            const idx = Object.keys(availableRoles).findIndex(r => r === role)
             if (idx < 0)
                 return;
             const gRole = guildRoles.find((r => r.name === role));
