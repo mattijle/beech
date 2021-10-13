@@ -5,34 +5,56 @@ module.exports = {
         .setName('rolemsg')
         .setDescription('Lue roolitus viestin.'),
     async execute(interaction) {
+
         const guild = interaction.guild;
         const channel = await guild.channels.fetch(getGuildInfoChannel(guild.name)) || interaction.channel;
         const roles = await getGuildRoles(guild.name);
+        const guildRoles = await guild.roles.fetch();
+        let emojiRole = {};
         if (!roles) {
             interaction.reply({ content: 'Ei rooleja tarjolla.', ephemeral: true });
             return;
         }
         await interaction.reply({ content: 'Luodaan roolitusviesti.', ephemeral: true });
+
+        // Create RoleMessage.
         const roleNames = Object.keys(roles);
+
         const messageContent = roleNames.reduce((prev, role) => {
-            prev += `${roles[role]} - ${role}\n`
+            let emoji = roles[role];
+            emojiRole[emoji] = role;
+            prev += `${emoji} - ${role}\n`
             return prev;
         }, 'Reagoi alla oleville emojeilla niin saat haluamasi roolin.\n');
 
         const msg = await channel.send(codeBlock(messageContent));
         updateGuildRoleMessage(guild.name, msg.id);
+
         roleNames.map(role => msg.react(roles[role]));
 
+        // Collect and handle reactions. This should perhaps be in it's own file. dunno.
         const filter = (r, u) => !u.bot;
         const collector = msg.createReactionCollector({ filter, dispose: true });
-        collector.on('remove', (r, u) => {
-            console.log('removed', r.emoji.name, u.username)
+
+        collector.on('remove', async (r, u) => {
+            const role = emojiRole[r.emoji.name];
+
+            if (!role) return;
+
+            const gRole = guildRoles.find((rl => rl.name === role));
+            const userCollection = await guild.members.search({ query: u.username })
+            const user = userCollection.get(u.id);
+            user.roles.remove(gRole);
         })
-        collector.on('create', (r, u) => {
-            console.log(r.emoji.name, u.username);
-        })
-        collector.on('collect', (r, u) => {
-            console.log(r.emoji.name, u.username);
+        collector.on('collect', async (r, u) => {
+            const role = emojiRole[r.emoji.name];
+
+            if (!role) return;
+
+            const gRole = guildRoles.find((rl => rl.name === role));
+            const userCollection = await guild.members.search({ query: u.username })
+            const user = userCollection.get(u.id);
+            user.roles.add(gRole);
         })
 
     },
