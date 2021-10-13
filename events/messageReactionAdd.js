@@ -2,6 +2,6 @@
 module.exports = {
 	name: 'messageReactionAdd',
 	execute(messageReaction) {
-		console.log(messageReaction)
+		//console.log(messageReaction)
 	},
 }
