@@ -6,7 +6,6 @@ module.exports = {
         .setDescription('Muuta botin palvelin kohtaisia asetuksia.')
         .addStringOption(option => option.setName('roolit').setDescription('Aseta botin tarjoamat roolit. (huom. ei luo uusia rooleja.)'))
         .addStringOption(option => option.setName('kanava').setDescription('Aseta botin käyttämä kanava')),
-    //.addStringOption(option => option.setName('kanava').setDescription('Kanava joilla haluat botin viestivän.'))
     async execute(interaction) {
         if (!interaction.memberPermissions.has('0x00000008', true)) {
             await interaction.reply({ content: 'Tarvitset admin oikeudet', ephemeral: true });
