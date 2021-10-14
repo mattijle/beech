@@ -48,7 +48,12 @@ module.exports = {
             const gRole = guildRoles.find((rl => rl.name === role));
             const userCollection = await guild.members.search({ query: u.username })
             const user = userCollection.get(u.id);
-            user.roles.remove(gRole);
+            try {
+                await user.roles.remove(gRole);
+            } catch (error) {
+                console.log(error);
+            }
+
         })
         collector.on('collect', async (r, u) => {
             const role = emojiRole[r.emoji.name];
@@ -58,7 +63,11 @@ module.exports = {
             const gRole = guildRoles.find((rl => rl.name === role));
             const userCollection = await guild.members.search({ query: u.username })
             const user = userCollection.get(u.id);
-            user.roles.add(gRole);
+            try {
+                user.roles.add(gRole);
+            } catch (error) {
+                console.log(error);
+            }
         })
 
     },
