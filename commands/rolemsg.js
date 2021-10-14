@@ -10,7 +10,8 @@ module.exports = {
             return;
         }
         const guild = interaction.guild;
-        const channel = await guild.channels.fetch(getGuildInfoChannel(guild.name)) || interaction.channel;
+        const channelId = getGuildInfoChannel(guild.name)
+        const channel = channelId ? await guild.channels.fetch(channelId) : interaction.channel;
         const roles = await getGuildRoles(guild.name);
         const guildRoles = await guild.roles.fetch();
         let emojiRole = {};

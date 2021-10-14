@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, codeBlock } = require('@discordjs/builders');
-const { setGuildRoles, setGuildInfoChannel } = require('../db');
+const { setGuildRoles, setGuildInfoChannel, getGuildInfoChannel } = require('../db');
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('set')
@@ -11,6 +11,7 @@ module.exports = {
             await interaction.reply({ content: 'Tarvitset admin oikeudet', ephemeral: true });
             return;
         }
+
         const optsRoles = interaction.options.getString('roolit');
         console.log(optsRoles);
         const optsChannels = interaction.options.getString('kanava');
@@ -20,9 +21,10 @@ module.exports = {
             return;
         }
         const guild = interaction.guild;
+        const channelId = getGuildInfoChannel(guild.name)
         let reply = '';
         if (optsRoles) {
-            const channel = await guild.channels.fetch(getGuildInfoChannel(guild.name)) || interaction.channel;
+            const channel = channelId ? await guild.channels.fetch(channelId) : interaction.channel;
             const roles = optsRoles.split(',');
             const guildroles = await guild.roles.fetch();
             const addedRoles = roles.reduce((prev, role) => {

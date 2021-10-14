@@ -20,7 +20,8 @@ module.exports = {
     data: noppa,
     async execute(interaction) {
         const guild = interaction.guild;
-        const channel = await guild.channels.fetch(getGuildInfoChannel(guild.name)) || interaction.channel;
+        const channelId = getGuildInfoChannel(guild.name)
+        const channel = channelId ? await guild.channels.fetch(channelId) : interaction.channel;
         const args = interaction.options.getString('nopat');
         var re = /[0-9]+[dD][0-9]+/;
         if (!args) { await interaction.reply({ content: 'Et valinnut noppia.', ephemeral: true }); return; }
