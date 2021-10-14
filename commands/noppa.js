@@ -1,5 +1,6 @@
 const { SlashCommandBuilder, codeBlock } = require('@discordjs/builders');
-const { MessageEmbed } = require('discord.js');
+const { getGuildInfoChannel } = require('../db');
+
 
 function getRandomInt(max) {
     return 1 + Math.floor(Math.random() * Math.floor(max));
@@ -18,6 +19,8 @@ noppa.addStringOption(option =>
 module.exports = {
     data: noppa,
     async execute(interaction) {
+        const guild = interaction.guild;
+        const channel = await guild.channels.fetch(getGuildInfoChannel(guild.name)) || interaction.channel;
         const args = interaction.options.getString('nopat');
         var re = /[0-9]+[dD][0-9]+/;
         if (!args) { await interaction.reply({ content: 'Et valinnut noppia.', ephemeral: true }); return; }
@@ -39,12 +42,12 @@ module.exports = {
             return prev;
         }, {})
         const keys = Object.keys(rolled);
-        let fields = [];
         let reply = ''
         for (key of keys) {
             reply += `${key}: ${rolled[key]}\n`
 
         }
-        await interaction.reply(codeBlock('js', reply));
+        channel.send(codeBlock('js', reply))
+        await interaction.reply({ content: codeBlock('js', reply), ephemeral: true });
     }
 };
