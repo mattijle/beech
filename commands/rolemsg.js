@@ -3,9 +3,12 @@ const { getGuildInfoChannel, setGuildRoleMessage, getGuildRoles } = require('../
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('rolemsg')
-        .setDescription('Lue roolitus viestin.'),
+        .setDescription('Luo roolitus viestin.'),
     async execute(interaction) {
-
+        if (!interaction.memberPermissions.has('0x00000008', true)) {
+            await interaction.reply({ content: 'Tarvitset admin oikeudet', ephemeral: true });
+            return;
+        }
         const guild = interaction.guild;
         const channel = await guild.channels.fetch(getGuildInfoChannel(guild.name)) || interaction.channel;
         const roles = await getGuildRoles(guild.name);
