@@ -14,7 +14,7 @@ const save = () => {
     });
 }
 exports.save = save;
-exports.updateGuildRoles = (guild, roles) => {
+exports.setGuildRoles = (guild, roles) => {
     instance.set(guild, 'roles', roles)
     save();
     return;
@@ -28,11 +28,11 @@ exports.getGuildInfoChannel = (guild) => {
 exports.getGuildRoleMessage = (guild) => {
     return instance.get(guild, 'RoleMessage');
 }
-exports.updateGuildRoleMessage = (guild, messageId) => {
+exports.setGuildRoleMessage = (guild, messageId) => {
     instance.set(guild, 'RoleMessage', messageId);
     return save();
 }
-exports.updateGuildInfoChannel = (guild, channelId) => {
+exports.setGuildInfoChannel = (guild, channelId) => {
     instance.set(guild, 'channel', channelId);
     return save();
 }

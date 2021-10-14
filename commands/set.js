@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, codeBlock } = require('@discordjs/builders');
-const { updateGuildRoles, updateGuildInfoChannel } = require('../db');
+const { setGuildRoles, setGuildInfoChannel } = require('../db');
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('set')
@@ -22,7 +22,7 @@ module.exports = {
         const guild = interaction.guild;
         let reply = '';
         if (optsRoles) {
-            const channel = interaction.guild.channels.fetch(interaction.channelId);
+            const channel = await guild.channels.fetch(getGuildInfoChannel(guild.name)) || interaction.channel;
             const roles = optsRoles.split(',');
             const guildroles = await guild.roles.fetch();
             const addedRoles = roles.reduce((prev, role) => {
@@ -33,29 +33,29 @@ module.exports = {
                 prev[role] = '';
                 return prev;
             }, {});
-            const information = await interaction.channel.send('Reagoi seuraaviin viesteihin haluamallasi emojilla.')
+            const information = await channel.send('Reagoi seuraaviin viesteihin haluamallasi emojilla.')
             setTimeout(() => {
                 information.delete();
             }, 1000 * 60 * 3)
             Object.keys(addedRoles).map(async (role) => {
 
-                const m = await interaction.channel.send(role);
+                const m = await channel.send(role);
                 let reaction = await m.awaitReactions({ max: 1 });
                 console.log(reaction.first()._emoji.name);
                 addedRoles[role] = reaction.first()._emoji.name;
-                updateGuildRoles(guild.name, addedRoles);
+                setGuildRoles(guild.name, addedRoles);
                 setTimeout(() => {
                     m.delete();
                 }, 1000 * 60 * 3)
             })
 
-            updateGuildRoles(guild.name, addedRoles);
+            setGuildRoles(guild.name, addedRoles);
             reply += `Pyydettävät roolit: ${Object.keys(addedRoles).toString()}`
         }
         if (optsChannels) {
             const channelId = optsChannels.replace(/<|#|>/g, '')
             const channel = await guild.channels.fetch(channelId)
-            updateGuildInfoChannel(guild.name, channelId);
+            setGuildInfoChannel(guild.name, channelId);
             reply += `\n Uusi info kanava asetettu: #${channel.name}`
         }
         await interaction.reply({ content: codeBlock('js', reply), ephemeral: true });

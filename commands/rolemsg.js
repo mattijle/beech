@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, codeBlock } = require('@discordjs/builders');
-const { getGuildInfoChannel, updateGuildRoleMessage, getGuildRoles } = require('../db');
+const { getGuildInfoChannel, setGuildRoleMessage, getGuildRoles } = require('../db');
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('rolemsg')
@@ -28,7 +28,7 @@ module.exports = {
         }, 'Reagoi alla oleville emojeilla niin saat haluamasi roolin.\n');
 
         const msg = await channel.send(codeBlock(messageContent));
-        updateGuildRoleMessage(guild.name, msg.id);
+        setGuildRoleMessage(guild.name, msg.id);
 
         roleNames.map(role => msg.react(roles[role]));
 
